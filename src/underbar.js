@@ -350,13 +350,13 @@
     var storage = {};
     
     return function() {
-      var argString = JSON.stringify();
+      var argString = JSON.stringify(arguments);
       if (storage[argString] !== undefined) {
         return storage[argString];
       }
       //if not, run the function on the arguments
       else { 
-        var results = func.apply();
+        var results = func.apply(this, arguments);
         storage[argString] = results;
         return results;
       }
@@ -395,14 +395,14 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
-    var workingArray = array.slice(0);
+    var workingArray = array.slice();
     var shuffledArray = [];
     
     var pickRandomIndex = function (workingArray) {
       if (workingArray.length > 0 ) {
-        var randomIndex = Math.floor(Math.random * workingArray.length);
+        var randomIndex = Math.floor(Math.random() * workingArray.length);
         shuffledArray.push(workingArray[randomIndex]);
-        workingArray.splice(randomIndex);
+        workingArray.splice(randomIndex, 1);
         pickRandomIndex(workingArray);
       }
     };
