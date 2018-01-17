@@ -101,25 +101,53 @@
     var returnArray = [];
     
     var filtered = _.filter(collection, test);
-    for (var i = 0; i < collection.length; i++) {
-      if (!filtered.includes(collection[i])) {
-        returnArray.push(collection[i]);
+    
+    _.each(collection, function (colItem) {
+      if (!filtered.includes(colItem)) {
+        returnArray.push(colItem);
       }
-    }
+    });
     
     return returnArray;
   };
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
+    var obj = {};
+    var arr = [];
+    
+    if (!iterator) {
+      _.each(array, function(item) {
+        if (!obj[item]) {
+          obj[item] = item;
+        }
+      });
+      
+    } else {
+      _.each(array, function(arrayItem) {
+        var iteratedItem = iterator(arrayItem);
+        if (!obj[iteratedItem]) {
+          obj[iteratedItem] = arrayItem;
+        }
+      });
+    }
+    
+    for (var key in obj) {
+      arr.push(obj[key]);
+    }
+    return arr;
   };
 
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
-    // map() is a useful primitive iteration function that works a lot
-    // like each(), but in addition to running the operation on all
-    // the members, it also maintains an array of results.
+    var arr = [];
+    
+    _.each(collection, function(item) {
+      arr.push(iterator(item));
+    });
+    
+    return arr;
   };
 
   /*
@@ -161,6 +189,20 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
+    if (arguments.length > 2) {
+      _.each(collection, function(item) {
+        // console.log('------------>', accumulator)
+        accumulator = iterator(accumulator, item);
+      });
+    } else {
+      // console.log('------------>2', accumulator)
+      accumulator = collection[0];
+      for ( var i = 1; i < collection.length; i++) {
+        accumulator = iterator(accumulator, collection[i]);
+      }
+    }
+    
+    return accumulator;
   };
 
   // Determine if the array or object contains a given value (using `===`).
