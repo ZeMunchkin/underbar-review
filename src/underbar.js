@@ -191,11 +191,9 @@
   _.reduce = function(collection, iterator, accumulator) {
     if (arguments.length > 2) {
       _.each(collection, function(item) {
-        // console.log('------------>', accumulator)
         accumulator = iterator(accumulator, item);
       });
     } else {
-      // console.log('------------>2', accumulator)
       accumulator = collection[0];
       for ( var i = 1; i < collection.length; i++) {
         accumulator = iterator(accumulator, collection[i]);
@@ -219,15 +217,53 @@
 
 
   // Determine whether all of the elements match a truth test.
-  _.every = function(collection, iterator) {
-    // TIP: Try re-using reduce() here.
+  _.every = function( collection, iterator ) {
+    var bool = true;
+    
+    if (collection.length === 0) {
+      return bool;
+    }
+    
+    _.each(collection, function(item) {
+      if (iterator && !iterator(item)) {
+        bool = false;
+      } else if (!item && iterator === undefined) {
+        bool = false;
+      }
+      
+    });
+    
+    return bool;
+  /*    return !!_.reduce( collection, function( startVal, item ) {
+      if (iterator) {
+        return iterator( startVal ) && iterator( item ); 
+      } else {
+        return startVal && item;
+      }
+    });
+   */   
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
-    // TIP: There's a very clever way to re-use every() here.
+    var bool = false;
+   
+    if (collection.length === 0) {
+      return bool;
+    }
+    _.each(collection, function(item) {
+      if (iterator !== undefined && iterator(item)) { 
+        bool = true;
+      } else if (iterator === undefined && item) {
+        bool = true;
+      }
+    });
+   
+   
+    return bool;
   };
+
 
 
   /**
@@ -249,11 +285,25 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    _.each(arguments, function(arg) {
+      for (var key in arg) {
+        obj[key] = arg[key];
+      }
+    });
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    _.each(arguments, function(arg) {
+      for (var key in arg) {
+        if (obj[key] === undefined) {
+          obj[key] = arg[key];
+        }
+      }
+    });
+    return obj;
   };
 
 
@@ -334,6 +384,7 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    
   };
 
   // Sort the object's values by a criterion produced by an iterator.
